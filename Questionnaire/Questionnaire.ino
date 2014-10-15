@@ -39,22 +39,64 @@
   #define  BUTTON_3  32
   #define  BUTTON_2  33
   #define  BUTTON_1  34
+  #define  DELAYTIME  3000
   
   LiquidCrystal lcd(8, 9, 4, 5, 6, 7);
   RTC_Millis rtc;
   
   File allFile;
   
-  byte push[8] = {
-  B11111,
-  B01110,
-  B00100,
-  B00100,
-  B10101,
-  B01110,
-  B00100,
-  };
+  byte push0[8] = {
+                      B00000,
+                      B11111,
+                      B11111,
+                      B11111,
+                      B11111,
+                      B11111,
+                      B11011, };
+  byte push1[8] = {
+                      B01000,
+                      B10000,
+                      B00000,
+                      B00000,
+                      B00000,
+                      B00000,
+                      B11111, };
+                      
+  byte push2[8] = {
+                      B11111,
+                      B00001,
+                      B00111,
+                      B00001,
+                      B00111,
+                      B00001,
+                      B11111, };
+ byte push3[8] = {
+                      B00000,
+                      B00000,
+                      B00000,
+                      B00000,
+                      B00000,
+                      B00000,
+                      B00000, };                      
+ byte push4[8] = {
+                      B00000,
+                      B00000,
+                      B00000,
+                      B00110,
+                      B01001,
+                      B01001,
+                      B01001, };  
+ byte push5[8] = {
+                      B00000,
+                      B00000,
+                      B00000,
+                      B00000,
+                      B00000,
+                      B00000,
+                      B00000, };                      
 
+  int people= 0;
   int hour_1= 0, minute_1= 0, second_1= 0;
   int readbutton5=0, readbutton4=0, readbutton3=0, readbutton2=0, readbutton1=0;    
   
@@ -71,27 +113,50 @@
     
     pinMode(CS, OUTPUT);
     SD.begin(CS,MOSI,MISO,CLK);
-    //first_save();  
+    first_save();  
     
-    lcd.begin(20, 4);
-    lcd.createChar(0, push);
+    lcd.begin(20, 4);  
+    // createChar for LCD
+    lcd.createChar(0, push0);
+    lcd.createChar(1, push1);
+    lcd.createChar(2, push2);
+    lcd.createChar(3, push3);
+    lcd.createChar(4, push4);
+    lcd.createChar(5, push5);
+
   }
   
   void loop() 
   { 
+    /******* Show LCD RealTime ********/
     lcd.home();
-    lcd.print("    Questionnaire   ");
+    lcd.print("--Questionnaire->");
+    lcd.setCursor(17, 0);
+    lcd.write(byte(3));
+    lcd.setCursor(18, 0);
+    lcd.write(byte(4));
+    lcd.setCursor(19, 0);
+    lcd.write(byte(5));
+    
     lcd.setCursor(0, 1);
-    lcd.print("Please You Choice");
+    lcd.print("   Please Choice");
     lcd.setCursor(17, 1);
     lcd.write(byte(0));
+    lcd.setCursor(18, 1);
+    lcd.write(byte(1));
+    lcd.setCursor(19, 1);
+    lcd.write(byte(2));
     lcd.setCursor(0, 2);
     lcd.print("  5   4   3   2   1 ");
-
     
     showtime();
-    
+    /**********************************/
+     
     verygood();
+    good();
+    medium();
+    //poor();
+    //verypoor();
   }
   void showtime()
   {
@@ -132,35 +197,238 @@
       }
   }
   
+  /*************** VERY GOOD **************/
   void verygood()
   {
     readbutton5 = digitalRead(BUTTON_5);
     Serial.println(readbutton5);
     if(readbutton5 == 0)
     {
+      delay(200);
+      people = people++;
+      lcd.setCursor(18, 0);
+      lcd.write(byte(3));
       lcd.setCursor(0, 1);
-      lcd.print("You Choice: VeryGood");
+      lcd.print("Choice: 5 (VeryGood)");
       lcd.setCursor(0, 2);
       lcd.print("ThankYou For Answers");
-      delay(3000);
+      delay(DELAYTIME);
       lcd.clear();
-    }
-    
+      
+      allFile = SD.open(OUTPUT_FILE, FILE_WRITE);
+      if (allFile) 
+      {   
+        /******   TIME  ************/ 
+        DateTime now = rtc.now();
+        allFile.print(now.hour());
+        allFile.print("/");
+        allFile.print(now.minute());
+        allFile.print("/");
+        allFile.print(now.second());
+        allFile.print(",");
+        /******   Number  *********/ 
+        allFile.print(people);
+        allFile.print(",");
+        /******   Answers  ********/ 
+        allFile.print("1");      //5    
+        allFile.print(",");      
+        allFile.print("0");      //4
+        allFile.print(",");
+        allFile.print("0");      //3
+        allFile.print(",");
+        allFile.print("0");      //2
+        allFile.print(",");
+        allFile.println("0");    //1
+        allFile.close();
+      }
+    }  
   }
+  
+  /***************** GOOD *****************/
   void good()
   {
-    
+    readbutton4 = digitalRead(BUTTON_4);
+    Serial.println(readbutton5);
+    if(readbutton4 == 0)
+    {
+      delay(200);
+      people = people++;
+      lcd.setCursor(18, 0);
+      lcd.write(byte(3));
+      lcd.setCursor(0, 1);
+      lcd.print("Choice: 4 (Good)    ");
+      lcd.setCursor(0, 2);
+      lcd.print("ThankYou For Answers");
+      delay(DELAYTIME);
+      lcd.clear();
+      
+      allFile = SD.open(OUTPUT_FILE, FILE_WRITE);
+      if (allFile) 
+      {   
+        /******   TIME  ************/ 
+        DateTime now = rtc.now();
+        allFile.print(now.hour());
+        allFile.print("/");
+        allFile.print(now.minute());
+        allFile.print("/");
+        allFile.print(now.second());
+        allFile.print(",");
+        /******   Number  *********/ 
+        allFile.print(people);
+        allFile.print(",");
+        /******   Answers  ********/ 
+        allFile.print("0");      //5    
+        allFile.print(",");      
+        allFile.print("1");      //4
+        allFile.print(",");
+        allFile.print("0");      //3
+        allFile.print(",");
+        allFile.print("0");      //2
+        allFile.print(",");
+        allFile.println("0");    //1
+        allFile.close();
+      }
+    }   
   }
-  void Medium()
+  
+  /**************** MEDIUM *****************/
+  void medium()
   {
-    
+    readbutton3 = digitalRead(BUTTON_3);
+    Serial.println(readbutton5);
+    if(readbutton3 == 0)
+    {
+      delay(200);
+      people = people++;
+      lcd.setCursor(18, 0);
+      lcd.write(byte(3));
+      lcd.setCursor(0, 1);
+      lcd.print("Choice: 3 (Medium)  ");
+      lcd.setCursor(0, 2);
+      lcd.print("ThankYou For Answers");
+      delay(DELAYTIME);
+      lcd.clear();
+      
+      allFile = SD.open(OUTPUT_FILE, FILE_WRITE);
+      if (allFile) 
+      {   
+        /******   TIME  ************/ 
+        DateTime now = rtc.now();
+        allFile.print(now.hour());
+        allFile.print("/");
+        allFile.print(now.minute());
+        allFile.print("/");
+        allFile.print(now.second());
+        allFile.print(",");
+        /******   Number  *********/ 
+        allFile.print(people);
+        allFile.print(",");
+        /******   Answers  ********/ 
+        allFile.print("0");      //5    
+        allFile.print(",");      
+        allFile.print("0");      //4
+        allFile.print(",");
+        allFile.print("1");      //3
+        allFile.print(",");
+        allFile.print("0");      //2
+        allFile.print(",");
+        allFile.println("0");    //1
+        allFile.close();
+      }
+    }       
   }
+  
+  /**************** POOR *****************/
   void poor()
   {
-    
+    readbutton2 = digitalRead(BUTTON_2);
+    Serial.println(readbutton2);
+    if(readbutton2 == 0)
+    {
+      delay(200);
+      people = people++;
+      lcd.setCursor(18, 0);
+      lcd.write(byte(3));
+      lcd.setCursor(0, 1);
+      lcd.print("Choice: 2 (Poor)    ");
+      lcd.setCursor(0, 2);
+      lcd.print("ThankYou For Answers");
+      delay(DELAYTIME);
+      lcd.clear();
+      
+      allFile = SD.open(OUTPUT_FILE, FILE_WRITE);
+      if (allFile) 
+      {   
+        /******   TIME  ************/ 
+        DateTime now = rtc.now();
+        allFile.print(now.hour());
+        allFile.print("/");
+        allFile.print(now.minute());
+        allFile.print("/");
+        allFile.print(now.second());
+        allFile.print(",");
+        /******   Number  *********/ 
+        allFile.print(people);
+        allFile.print(",");
+        /******   Answers  ********/ 
+        allFile.print("0");      //5    
+        allFile.print(",");      
+        allFile.print("0");      //4
+        allFile.print(",");
+        allFile.print("0");      //3
+        allFile.print(",");
+        allFile.print("1");      //2
+        allFile.print(",");
+        allFile.println("0");    //1
+        allFile.close();
+      }
+    }       
   }
+  
+  /************** VERY POOR ***************/ 
   void verypoor()
   {
-    
+    readbutton1 = digitalRead(BUTTON_1);
+    Serial.println(readbutton5);
+    if(readbutton1 == 0)
+    {
+      delay(200);
+      people = people++;
+      lcd.setCursor(18, 0);
+      lcd.write(byte(3));
+      lcd.setCursor(0, 1);
+      lcd.print("Choice: 1 (VeryPoor)");
+      lcd.setCursor(0, 2);
+      lcd.print("ThankYou For Answers");
+      delay(DELAYTIME);
+      lcd.clear();
+      
+      allFile = SD.open(OUTPUT_FILE, FILE_WRITE);
+      if (allFile) 
+      {   
+        /******   TIME  ************/ 
+        DateTime now = rtc.now();
+        allFile.print(now.hour());
+        allFile.print("/");
+        allFile.print(now.minute());
+        allFile.print("/");
+        allFile.print(now.second());
+        allFile.print(",");
+        /******   Number  *********/ 
+        allFile.print(people);
+        allFile.print(",");
+        /******   Answers  ********/ 
+        allFile.print("0");      //5    
+        allFile.print(",");      
+        allFile.print("0");      //4
+        allFile.print(",");
+        allFile.print("0");      //3
+        allFile.print(",");
+        allFile.print("0");      //2
+        allFile.print(",");
+        allFile.println("1");    //1
+        allFile.close();
+      }
+    }       
   }
 
