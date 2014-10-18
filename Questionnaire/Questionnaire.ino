@@ -14,7 +14,7 @@
    *  MOSI - pin 50
    *  MISO - pin 51
    *  CLK - pin 52
-   *  CS - 53
+   *  CS -  pin 53
    * But i use deek-robot datalog shield connect to :
    *  MOSI - pin 11
    *  MISO - pin 12
@@ -39,7 +39,7 @@
   #define  BUTTON_3  32
   #define  BUTTON_2  33
   #define  BUTTON_1  34
-  #define  DELAYTIME  3000
+  #define  DELAYTIME  2000
   
   LiquidCrystal lcd(8, 9, 4, 5, 6, 7);
   RTC_Millis rtc;
@@ -97,13 +97,14 @@
                       B00000, };                      
 
   int people= 0;
-  int hour_1= 0, minute_1= 0, second_1= 0;
   int readbutton5=0, readbutton4=0, readbutton3=0, readbutton2=0, readbutton1=0;    
   
   void setup() 
   {
+    Wire.begin();
     rtc.begin(DateTime(__DATE__, __TIME__));
     Serial.begin(9600);
+    while (!Serial) {;}
     
     pinMode(BUTTON_5, INPUT);
     pinMode(BUTTON_4, INPUT);
@@ -113,6 +114,7 @@
     
     pinMode(CS, OUTPUT);
     SD.begin(CS,MOSI,MISO,CLK);
+    
     first_save();  
     
     lcd.begin(20, 4);  
@@ -123,14 +125,14 @@
     lcd.createChar(3, push3);
     lcd.createChar(4, push4);
     lcd.createChar(5, push5);
-
+    
   }
   
   void loop() 
   { 
     /******* Show LCD RealTime ********/
     lcd.home();
-    lcd.print("--Questionnaire->");
+    lcd.print("  RMUTL Question ");
     lcd.setCursor(17, 0);
     lcd.write(byte(3));
     lcd.setCursor(18, 0);
@@ -155,31 +157,31 @@
     verygood();
     good();
     medium();
-    //poor();
-    //verypoor();
+    poor();
+    verypoor();
   }
+  
   void showtime()
   {
-    DateTime now = rtc.now();
-    hour_1 = now.hour();
-    minute_1 = now.minute();
-    second_1 = now.second();
-    
+    DateTime now = rtc.now();  
     lcd.setCursor(0, 4);
     lcd.print("Time : ");
     lcd.setCursor(8, 4);
-    lcd.print(hour_1);
-    lcd.print("/");
-    lcd.print(minute_1);
-    lcd.print("/");
-    lcd.print(second_1);
+    lcd.print(now.hour());
+    lcd.print(":");
+    lcd.print(now.minute());
+    lcd.print(":");
+    lcd.print(now.second());
     lcd.print(" ");
+    DateTime future (now.unixtime() + 7 * 86400L + 30);
   }
   void first_save()
   {
     allFile = SD.open(OUTPUT_FILE, FILE_WRITE);
     if (allFile) 
       {   
+        allFile.print("Date");
+        allFile.print(",");
         allFile.print("Time");
         allFile.print(",");
         allFile.print("Number");
@@ -218,12 +220,19 @@
       allFile = SD.open(OUTPUT_FILE, FILE_WRITE);
       if (allFile) 
       {   
-        /******   TIME  ************/ 
+        /******   DATE  ************/ 
         DateTime now = rtc.now();
+        allFile.print(now.day());
+        allFile.print("/");
+        allFile.print(now.month());
+        allFile.print("/");
+        allFile.print(now.year());
+        allFile.print(",");
+        /******   TIME  ************/ 
         allFile.print(now.hour());
-        allFile.print("/");
+        allFile.print(":");
         allFile.print(now.minute());
-        allFile.print("/");
+        allFile.print(":");
         allFile.print(now.second());
         allFile.print(",");
         /******   Number  *********/ 
@@ -239,6 +248,7 @@
         allFile.print("0");      //2
         allFile.print(",");
         allFile.println("0");    //1
+        DateTime future (now.unixtime() + 7 * 86400L + 30);
         allFile.close();
       }
     }  
@@ -264,13 +274,20 @@
       
       allFile = SD.open(OUTPUT_FILE, FILE_WRITE);
       if (allFile) 
-      {   
-        /******   TIME  ************/ 
+      { 
+        /******   DATE  ************/ 
         DateTime now = rtc.now();
+        allFile.print(now.day());
+        allFile.print("/");
+        allFile.print(now.month());
+        allFile.print("/");
+        allFile.print(now.year());
+        allFile.print(",");        
+        /******   TIME  ************/ 
         allFile.print(now.hour());
-        allFile.print("/");
+        allFile.print(":");
         allFile.print(now.minute());
-        allFile.print("/");
+        allFile.print(":");
         allFile.print(now.second());
         allFile.print(",");
         /******   Number  *********/ 
@@ -286,6 +303,7 @@
         allFile.print("0");      //2
         allFile.print(",");
         allFile.println("0");    //1
+        DateTime future (now.unixtime() + 7 * 86400L + 30);
         allFile.close();
       }
     }   
@@ -311,13 +329,20 @@
       
       allFile = SD.open(OUTPUT_FILE, FILE_WRITE);
       if (allFile) 
-      {   
-        /******   TIME  ************/ 
+      {
+        /******   DATE  ************/ 
         DateTime now = rtc.now();
+        allFile.print(now.day());
+        allFile.print("/");
+        allFile.print(now.month());
+        allFile.print("/");
+        allFile.print(now.year());
+        allFile.print(",");   
+        /******   TIME  ************/ 
         allFile.print(now.hour());
-        allFile.print("/");
+        allFile.print(":");
         allFile.print(now.minute());
-        allFile.print("/");
+        allFile.print(":");
         allFile.print(now.second());
         allFile.print(",");
         /******   Number  *********/ 
@@ -333,6 +358,7 @@
         allFile.print("0");      //2
         allFile.print(",");
         allFile.println("0");    //1
+        DateTime future (now.unixtime() + 7 * 86400L + 30);
         allFile.close();
       }
     }       
@@ -358,13 +384,20 @@
       
       allFile = SD.open(OUTPUT_FILE, FILE_WRITE);
       if (allFile) 
-      {   
-        /******   TIME  ************/ 
+      {
+        /******   DATE  ************/ 
         DateTime now = rtc.now();
+        allFile.print(now.day());
+        allFile.print("/");
+        allFile.print(now.month());
+        allFile.print("/");
+        allFile.print(now.year());
+        allFile.print(",");       
+        /******   TIME  ************/ 
         allFile.print(now.hour());
-        allFile.print("/");
+        allFile.print(":");
         allFile.print(now.minute());
-        allFile.print("/");
+        allFile.print(":");
         allFile.print(now.second());
         allFile.print(",");
         /******   Number  *********/ 
@@ -380,6 +413,7 @@
         allFile.print("1");      //2
         allFile.print(",");
         allFile.println("0");    //1
+        DateTime future (now.unixtime() + 7 * 86400L + 30);
         allFile.close();
       }
     }       
@@ -405,13 +439,20 @@
       
       allFile = SD.open(OUTPUT_FILE, FILE_WRITE);
       if (allFile) 
-      {   
-        /******   TIME  ************/ 
+      { 
+        /******   DATE  ************/ 
         DateTime now = rtc.now();
+        allFile.print(now.day());
+        allFile.print("/");
+        allFile.print(now.month());
+        allFile.print("/");
+        allFile.print(now.year());
+        allFile.print(",");  
+        /******   TIME  ************/ 
         allFile.print(now.hour());
-        allFile.print("/");
+        allFile.print(":");
         allFile.print(now.minute());
-        allFile.print("/");
+        allFile.print(":");
         allFile.print(now.second());
         allFile.print(",");
         /******   Number  *********/ 
@@ -427,6 +468,7 @@
         allFile.print("0");      //2
         allFile.print(",");
         allFile.println("1");    //1
+        DateTime future (now.unixtime() + 7 * 86400L + 30);
         allFile.close();
       }
     }       
