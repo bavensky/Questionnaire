@@ -21,6 +21,12 @@
    *  CLK - pin 13
    *  CS - pin 4 or 10  now i use pin 10
    
+     RTC DS1307
+   *  Vcc  -  +5v
+   *  GND  -  Ground
+   *  SDA  -  pin 20
+   *  SCL  -  pin 21
+   
    */
   
   #include <LiquidCrystal.h>
@@ -39,10 +45,12 @@
   #define  BUTTON_3  32
   #define  BUTTON_2  33
   #define  BUTTON_1  34
-  #define  DELAYTIME  2000
+  #define  BUSZER    35
+  #define  DELAYTIME  1000
+  
   
   LiquidCrystal lcd(8, 9, 4, 5, 6, 7);
-  RTC_Millis rtc;
+  RTC_DS1307 rtc;
   
   File allFile;
   
@@ -102,7 +110,8 @@
   void setup() 
   {
     Wire.begin();
-    rtc.begin(DateTime(__DATE__, __TIME__));
+    rtc.begin();
+    //rtc.adjust(DateTime(__DATE__, __TIME__));  //  Adjust time now
     Serial.begin(9600);
     while (!Serial) {;}
     
@@ -111,6 +120,7 @@
     pinMode(BUTTON_3, INPUT);
     pinMode(BUTTON_2, INPUT);
     pinMode(BUTTON_1, INPUT);
+    pinMode(BUSZER,  OUTPUT);
     
     pinMode(CS, OUTPUT);
     SD.begin(CS,MOSI,MISO,CLK);
@@ -173,7 +183,6 @@
     lcd.print(":");
     lcd.print(now.second());
     lcd.print(" ");
-    DateTime future (now.unixtime() + 7 * 86400L + 30);
   }
   void first_save()
   {
@@ -207,6 +216,7 @@
     if(readbutton5 == 0)
     {
       delay(200);
+      digitalWrite(BUSZER, HIGH);
       people = people++;
       lcd.setCursor(18, 0);
       lcd.write(byte(3));
@@ -214,7 +224,9 @@
       lcd.print("Choice: 5 (VeryGood)");
       lcd.setCursor(0, 2);
       lcd.print("ThankYou For Answers");
+      digitalWrite(BUSZER, HIGH);
       delay(DELAYTIME);
+      digitalWrite(BUSZER, LOW);
       lcd.clear();
       
       allFile = SD.open(OUTPUT_FILE, FILE_WRITE);
@@ -248,7 +260,6 @@
         allFile.print("0");      //2
         allFile.print(",");
         allFile.println("0");    //1
-        DateTime future (now.unixtime() + 7 * 86400L + 30);
         allFile.close();
       }
     }  
@@ -269,7 +280,9 @@
       lcd.print("Choice: 4 (Good)    ");
       lcd.setCursor(0, 2);
       lcd.print("ThankYou For Answers");
+      digitalWrite(BUSZER, HIGH);
       delay(DELAYTIME);
+      digitalWrite(BUSZER, LOW);
       lcd.clear();
       
       allFile = SD.open(OUTPUT_FILE, FILE_WRITE);
@@ -303,7 +316,6 @@
         allFile.print("0");      //2
         allFile.print(",");
         allFile.println("0");    //1
-        DateTime future (now.unixtime() + 7 * 86400L + 30);
         allFile.close();
       }
     }   
@@ -324,7 +336,9 @@
       lcd.print("Choice: 3 (Medium)  ");
       lcd.setCursor(0, 2);
       lcd.print("ThankYou For Answers");
+      digitalWrite(BUSZER, HIGH);
       delay(DELAYTIME);
+      digitalWrite(BUSZER, LOW);
       lcd.clear();
       
       allFile = SD.open(OUTPUT_FILE, FILE_WRITE);
@@ -358,7 +372,6 @@
         allFile.print("0");      //2
         allFile.print(",");
         allFile.println("0");    //1
-        DateTime future (now.unixtime() + 7 * 86400L + 30);
         allFile.close();
       }
     }       
@@ -379,7 +392,9 @@
       lcd.print("Choice: 2 (Poor)    ");
       lcd.setCursor(0, 2);
       lcd.print("ThankYou For Answers");
+      digitalWrite(BUSZER, HIGH);
       delay(DELAYTIME);
+      digitalWrite(BUSZER, LOW);
       lcd.clear();
       
       allFile = SD.open(OUTPUT_FILE, FILE_WRITE);
@@ -413,7 +428,6 @@
         allFile.print("1");      //2
         allFile.print(",");
         allFile.println("0");    //1
-        DateTime future (now.unixtime() + 7 * 86400L + 30);
         allFile.close();
       }
     }       
@@ -434,7 +448,9 @@
       lcd.print("Choice: 1 (VeryPoor)");
       lcd.setCursor(0, 2);
       lcd.print("ThankYou For Answers");
+      digitalWrite(BUSZER, HIGH);
       delay(DELAYTIME);
+      digitalWrite(BUSZER, LOW);
       lcd.clear();
       
       allFile = SD.open(OUTPUT_FILE, FILE_WRITE);
@@ -468,7 +484,6 @@
         allFile.print("0");      //2
         allFile.print(",");
         allFile.println("1");    //1
-        DateTime future (now.unixtime() + 7 * 86400L + 30);
         allFile.close();
       }
     }       
