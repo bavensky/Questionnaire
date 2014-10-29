@@ -1,15 +1,12 @@
   /*
   
-    The LCD circuit:
-   * LCD RS pin to digital pin 8
-   * LCD Enable pin to digital pin 9
-   * LCD D4 pin to digital pin 4
-   * LCD D5 pin to digital pin 5
-   * LCD D6 pin to digital pin 6
-   * LCD D7 pin to digital pin 7
-   * LCD R/W pin to ground
+    The LCD_I2C circuit :
+   * VCC  -  +5 V
+   * GND  -  Ground
+   * SDA  -  A4
+   * SCL  -  A5
    
-    SD card attached to SPI bus as follows:
+    SD card attached to SPI bus as follows :
    *Mega 
    *  MOSI - pin 50
    *  MISO - pin 51
@@ -21,15 +18,15 @@
    *  CLK - pin 13
    *  CS - pin 4 or 10  now i use pin 10
    
-     RTC DS1307
-   *  Vcc  -  +5v
+     RTC DS1307 : 
+   *  VCC  -  +5 V
    *  GND  -  Ground
-   *  SDA  -  pin 20
-   *  SCL  -  pin 21
+   *  SDA  -  pin A4  (pin 20 for Mega)
+   *  SCL  -  pin A5  (pin 21 for Mega)
    
    */
   
-  #include <LiquidCrystal.h>
+  #include <LiquidCrystal_I2C.h>
   #include <SD.h>
   #include <Wire.h>
   #include "RTClib.h"
@@ -40,16 +37,16 @@
   #define  CLK   13
 
   #define  OUTPUT_FILE "Datalog.csv"
-  #define  BUTTON_5  30 
-  #define  BUTTON_4  31
-  #define  BUTTON_3  32
-  #define  BUTTON_2  33
-  #define  BUTTON_1  34
-  #define  BUSZER    35
+  #define  BUTTON_5  A0  // Mega pin 30
+  #define  BUTTON_4  A1  // Mega pin 31
+  #define  BUTTON_3  A2  // Mega pin 32
+  #define  BUTTON_2  A3  // Mega pin 33
+  #define  BUTTON_1  2   // Mega pin 34
+  #define  BUSZER    3  // Mega pin 35
   #define  DELAYTIME  1000
   
-  
-  LiquidCrystal lcd(8, 9, 4, 5, 6, 7);
+ 
+  LiquidCrystal_I2C lcd(0x27,16,4);
   RTC_DS1307 rtc;
   
   File allFile;
@@ -109,9 +106,11 @@
   
   void setup() 
   {
+    lcd.init(); 
+    lcd.backlight();
     Wire.begin();
     rtc.begin();
-    //rtc.adjust(DateTime(__DATE__, __TIME__));  //  Adjust time now
+    rtc.adjust(DateTime(__DATE__, __TIME__));  //  Adjust time now
     Serial.begin(9600);
     while (!Serial) {;}
     
@@ -151,7 +150,7 @@
     lcd.write(byte(5));
     
     lcd.setCursor(0, 1);
-    lcd.print("   Please Choice");
+    lcd.print("  Please Choice");
     lcd.setCursor(17, 1);
     lcd.write(byte(0));
     lcd.setCursor(18, 1);
@@ -159,7 +158,7 @@
     lcd.setCursor(19, 1);
     lcd.write(byte(2));
     lcd.setCursor(0, 2);
-    lcd.print("  5   4   3   2   1 ");
+    lcd.print(" 5   4   3   2   1 ");
     
     showtime();
     /**********************************/
@@ -174,9 +173,9 @@
   void showtime()
   {
     DateTime now = rtc.now();  
-    lcd.setCursor(0, 4);
-    lcd.print("Time : ");
-    lcd.setCursor(8, 4);
+    lcd.setCursor(2, 3);
+    lcd.print("Time: ");
+    lcd.setCursor(8, 3);
     lcd.print(now.hour());
     lcd.print(":");
     lcd.print(now.minute());
@@ -227,6 +226,7 @@
       digitalWrite(BUSZER, HIGH);
       delay(DELAYTIME);
       digitalWrite(BUSZER, LOW);
+      delay(DELAYTIME);
       lcd.clear();
       
       allFile = SD.open(OUTPUT_FILE, FILE_WRITE);
@@ -283,6 +283,7 @@
       digitalWrite(BUSZER, HIGH);
       delay(DELAYTIME);
       digitalWrite(BUSZER, LOW);
+      delay(DELAYTIME);
       lcd.clear();
       
       allFile = SD.open(OUTPUT_FILE, FILE_WRITE);
@@ -339,6 +340,7 @@
       digitalWrite(BUSZER, HIGH);
       delay(DELAYTIME);
       digitalWrite(BUSZER, LOW);
+      delay(DELAYTIME);
       lcd.clear();
       
       allFile = SD.open(OUTPUT_FILE, FILE_WRITE);
@@ -395,6 +397,7 @@
       digitalWrite(BUSZER, HIGH);
       delay(DELAYTIME);
       digitalWrite(BUSZER, LOW);
+      delay(DELAYTIME);
       lcd.clear();
       
       allFile = SD.open(OUTPUT_FILE, FILE_WRITE);
@@ -451,6 +454,7 @@
       digitalWrite(BUSZER, HIGH);
       delay(DELAYTIME);
       digitalWrite(BUSZER, LOW);
+      delay(DELAYTIME);
       lcd.clear();
       
       allFile = SD.open(OUTPUT_FILE, FILE_WRITE);
