@@ -110,7 +110,7 @@
     lcd.backlight();
     Wire.begin();
     rtc.begin();
-    rtc.adjust(DateTime(__DATE__, __TIME__));  //  Adjust time now
+    //rtc.adjust(DateTime(__DATE__, __TIME__));  //  Adjust time now
     Serial.begin(9600);
     while (!Serial) {;}
     
