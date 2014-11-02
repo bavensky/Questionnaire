@@ -43,7 +43,7 @@
   #define  BUTTON_2  A3  // Mega pin 33
   #define  BUTTON_1  2   // Mega pin 34
   #define  BUSZER    3  // Mega pin 35
-  #define  DELAYTIME  1000
+  #define  DELAYTIME  1
   
  
   LiquidCrystal_I2C lcd(0x27,16,4);
@@ -103,6 +103,7 @@
 
   int people= 0;
   int readbutton5=0, readbutton4=0, readbutton3=0, readbutton2=0, readbutton1=0;    
+  int button_buffer=0;
   
   void setup() 
   {
@@ -114,11 +115,11 @@
     Serial.begin(9600);
     while (!Serial) {;}
     
-    pinMode(BUTTON_5, INPUT);
-    pinMode(BUTTON_4, INPUT);
-    pinMode(BUTTON_3, INPUT);
-    pinMode(BUTTON_2, INPUT);
-    pinMode(BUTTON_1, INPUT);
+    pinMode(BUTTON_5, INPUT_PULLUP);
+    pinMode(BUTTON_4, INPUT_PULLUP);
+    pinMode(BUTTON_3, INPUT_PULLUP);
+    pinMode(BUTTON_2, INPUT_PULLUP);
+    pinMode(BUTTON_1, INPUT_PULLUP);
     pinMode(BUSZER,  OUTPUT);
     
     pinMode(CS, OUTPUT);
@@ -210,11 +211,12 @@
   /*************** VERY GOOD **************/
   void verygood()
   {
+    button_buffer = readbutton5 ;
+    
     readbutton5 = digitalRead(BUTTON_5);
     Serial.println(readbutton5);
-    if(readbutton5 == 0)
+    if(!readbutton5 & button_buffer)
     {
-      delay(200);
       digitalWrite(BUSZER, HIGH);
       people = people++;
       lcd.setCursor(18, 0);
@@ -223,10 +225,7 @@
       lcd.print("Choice: 5 (VeryGood)");
       lcd.setCursor(0, 2);
       lcd.print("ThankYou For Answers");
-      digitalWrite(BUSZER, HIGH);
-      delay(DELAYTIME);
-      digitalWrite(BUSZER, LOW);
-      delay(DELAYTIME);
+ 
       lcd.clear();
       
       allFile = SD.open(OUTPUT_FILE, FILE_WRITE);
@@ -262,17 +261,21 @@
         allFile.println("0");    //1
         allFile.close();
       }
+      delay(DELAYTIME);
+      digitalWrite(BUSZER, LOW);
     }  
   }
   
   /***************** GOOD *****************/
   void good()
   {
+    button_buffer = readbutton4 ;
+    
     readbutton4 = digitalRead(BUTTON_4);
     Serial.println(readbutton5);
-    if(readbutton4 == 0)
+    if(!readbutton4 & readbutton4)
     {
-      delay(200);
+      digitalWrite(BUSZER, HIGH);
       people = people++;
       lcd.setCursor(18, 0);
       lcd.write(byte(3));
@@ -280,10 +283,7 @@
       lcd.print("Choice: 4 (Good)    ");
       lcd.setCursor(0, 2);
       lcd.print("ThankYou For Answers");
-      digitalWrite(BUSZER, HIGH);
-      delay(DELAYTIME);
-      digitalWrite(BUSZER, LOW);
-      delay(DELAYTIME);
+
       lcd.clear();
       
       allFile = SD.open(OUTPUT_FILE, FILE_WRITE);
@@ -319,17 +319,21 @@
         allFile.println("0");    //1
         allFile.close();
       }
+      delay(DELAYTIME);
+      digitalWrite(BUSZER, LOW);
     }   
   }
   
   /**************** MEDIUM *****************/
   void medium()
   {
+    button_buffer = readbutton3;
+    
     readbutton3 = digitalRead(BUTTON_3);
     Serial.println(readbutton5);
-    if(readbutton3 == 0)
+    if(!readbutton3 & readbutton3 )
     {
-      delay(200);
+      digitalWrite(BUSZER, HIGH);
       people = people++;
       lcd.setCursor(18, 0);
       lcd.write(byte(3));
@@ -337,10 +341,7 @@
       lcd.print("Choice: 3 (Medium)  ");
       lcd.setCursor(0, 2);
       lcd.print("ThankYou For Answers");
-      digitalWrite(BUSZER, HIGH);
-      delay(DELAYTIME);
-      digitalWrite(BUSZER, LOW);
-      delay(DELAYTIME);
+
       lcd.clear();
       
       allFile = SD.open(OUTPUT_FILE, FILE_WRITE);
@@ -376,17 +377,21 @@
         allFile.println("0");    //1
         allFile.close();
       }
+      delay(DELAYTIME);
+      digitalWrite(BUSZER, LOW);
     }       
   }
   
   /**************** POOR *****************/
   void poor()
   {
+    button_buffer = readbutton2 ;
+    
     readbutton2 = digitalRead(BUTTON_2);
     Serial.println(readbutton2);
-    if(readbutton2 == 0)
+    if(!readbutton2 & readbutton2)
     {
-      delay(200);
+      digitalWrite(BUSZER, HIGH);
       people = people++;
       lcd.setCursor(18, 0);
       lcd.write(byte(3));
@@ -394,10 +399,7 @@
       lcd.print("Choice: 2 (Poor)    ");
       lcd.setCursor(0, 2);
       lcd.print("ThankYou For Answers");
-      digitalWrite(BUSZER, HIGH);
-      delay(DELAYTIME);
-      digitalWrite(BUSZER, LOW);
-      delay(DELAYTIME);
+
       lcd.clear();
       
       allFile = SD.open(OUTPUT_FILE, FILE_WRITE);
@@ -433,17 +435,21 @@
         allFile.println("0");    //1
         allFile.close();
       }
+      delay(DELAYTIME);
+      digitalWrite(BUSZER, LOW);
     }       
   }
   
   /************** VERY POOR ***************/ 
   void verypoor()
   {
+    button_buffer = readbutton1 ;
+    
     readbutton1 = digitalRead(BUTTON_1);
     Serial.println(readbutton5);
-    if(readbutton1 == 0)
+    if(!readbutton1 & button_buffer )
     {
-      delay(200);
+      digitalWrite(BUSZER, HIGH);
       people = people++;
       lcd.setCursor(18, 0);
       lcd.write(byte(3));
@@ -451,10 +457,7 @@
       lcd.print("Choice: 1 (VeryPoor)");
       lcd.setCursor(0, 2);
       lcd.print("ThankYou For Answers");
-      digitalWrite(BUSZER, HIGH);
-      delay(DELAYTIME);
-      digitalWrite(BUSZER, LOW);
-      delay(DELAYTIME);
+
       lcd.clear();
       
       allFile = SD.open(OUTPUT_FILE, FILE_WRITE);
@@ -490,6 +493,8 @@
         allFile.println("1");    //1
         allFile.close();
       }
+      delay(DELAYTIME);
+      digitalWrite(BUSZER, LOW);
     }       
   }
 
