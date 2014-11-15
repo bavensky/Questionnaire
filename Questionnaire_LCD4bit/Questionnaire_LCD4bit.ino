@@ -1,5 +1,18 @@
   /*
-  
+    The code use for ATmega2560 and use lcd 16x2 4 bit
+    
+     The LCD 4 bit circuit:
+   * LCD RS pin to digital pin 8
+   * LCD Enable pin to digital pin 9
+   * LCD D4 pin to digital pin 4
+   * LCD D5 pin to digital pin 5
+   * LCD D6 pin to digital pin 6
+   * LCD D7 pin to digital pin 7
+   * LCD R/W pin to ground
+   * 10K resistor:
+   * ends to +5V and ground
+   * wiper to LCD VO pin (pin 3) 
+   
     The LCD_I2C circuit :
    * VCC  -  +5 V
    * GND  -  Ground
@@ -26,7 +39,7 @@
    
    */
   
-  #include <LiquidCrystal_I2C.h>
+  #include <LiquidCrystal.h>
   #include <SD.h>
   #include <Wire.h>
   #include "RTClib.h"
@@ -37,16 +50,16 @@
   #define  CLK   13
 
   #define  OUTPUT_FILE "Datalog.csv"
-  #define  BUTTON_5  A0  // Mega pin 30
-  #define  BUTTON_4  A1  // Mega pin 31
-  #define  BUTTON_3  A2  // Mega pin 32
-  #define  BUTTON_2  A3  // Mega pin 33
-  #define  BUTTON_1  2   // Mega pin 34
-  #define  BUSZER    3  // Mega pin 35
+  #define  BUTTON_5  30  // Uno pin A0
+  #define  BUTTON_4  31  // Uno pin A1
+  #define  BUTTON_3  32  // Uno pin A2
+  #define  BUTTON_2  33  // Uno pin A3
+  #define  BUTTON_1  34  // Uno pin 2
+  #define  BUSZER    35  //  Uno pin 3
   #define  DELAYTIME  1000
   
  
-  LiquidCrystal_I2C lcd(0x27,16,4);
+  LiquidCrystal lcd(8, 9, 4, 5, 6, 7);
   RTC_DS1307 rtc;
   
   File allFile;
@@ -106,13 +119,10 @@
   
   void setup() 
   {
-    lcd.init(); 
-    lcd.backlight();
     Wire.begin();
     rtc.begin();
     //rtc.adjust(DateTime(__DATE__, __TIME__));  //  Adjust time now
     Serial.begin(9600);
-    while (!Serial) {;}
     
     pinMode(BUTTON_5, INPUT);
     pinMode(BUTTON_4, INPUT);
@@ -150,7 +160,7 @@
     lcd.write(byte(5));
     
     lcd.setCursor(0, 1);
-    lcd.print("  Please Choice");
+    lcd.print("  Please Choice  ");
     lcd.setCursor(17, 1);
     lcd.write(byte(0));
     lcd.setCursor(18, 1);
@@ -182,6 +192,21 @@
     lcd.print(":");
     lcd.print(now.second());
     lcd.print(" ");
+    
+    
+    Serial.print(now.year(), DEC);
+    Serial.print('/');
+    Serial.print(now.month(), DEC);
+    Serial.print('/');
+    Serial.print(now.day(), DEC);
+    Serial.print(' ');
+    Serial.print(now.hour(), DEC);
+    Serial.print(':');
+    Serial.print(now.minute(), DEC);
+    Serial.print(':');
+    Serial.print(now.second(), DEC);
+    Serial.println();
+    DateTime future (now.unixtime() + 7 * 86400L + 30);
   }
   void first_save()
   {
@@ -261,7 +286,7 @@
       delay(DELAYTIME);
       digitalWrite(BUSZER, LOW);
       delay(DELAYTIME);
-      //lcd.clear();
+      
     }  
   }
   
@@ -319,7 +344,7 @@
       delay(DELAYTIME);
       digitalWrite(BUSZER, LOW);
       delay(DELAYTIME);
-      //lcd.clear();
+      
     }   
   }
   
@@ -377,7 +402,7 @@
       delay(DELAYTIME);
       digitalWrite(BUSZER, LOW);
       delay(DELAYTIME);
-      //lcd.clear();
+      
     }       
   }
   
@@ -435,7 +460,7 @@
       delay(DELAYTIME);
       digitalWrite(BUSZER, LOW);
       delay(DELAYTIME);
-      //lcd.clear();
+      
     }       
   }
   
@@ -493,7 +518,7 @@
       delay(DELAYTIME);
       digitalWrite(BUSZER, LOW);
       delay(DELAYTIME);
-      //lcd.clear();
+      
     }       
   }
 
