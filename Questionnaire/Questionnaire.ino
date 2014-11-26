@@ -1,5 +1,4 @@
   /*
-  
     The LCD_I2C circuit :
    * VCC  -  +5 V
    * GND  -  Ground
@@ -35,8 +34,9 @@
   #define  MOSI  11
   #define  MISO  12
   #define  CLK   13
-
-  #define  OUTPUT_FILE "Datalog.csv"
+  Sd2Card card;
+  
+  #define  OUTPUT_FILE  "Datalog.csv"
   #define  BUTTON_5  A0  // Mega pin 30
   #define  BUTTON_4  A1  // Mega pin 31
   #define  BUTTON_3  A2  // Mega pin 32
@@ -45,7 +45,7 @@
   #define  BUSZER    3  // Mega pin 35
   #define  DELAYTIME  1000
   
- 
+  
   LiquidCrystal_I2C lcd(0x27,16,4);
   RTC_DS1307 rtc;
   
@@ -110,21 +110,10 @@
     lcd.backlight();
     Wire.begin();
     rtc.begin();
-    //rtc.adjust(DateTime(__DATE__, __TIME__));  //  Adjust time now
-    Serial.begin(9600);
-    while (!Serial) {;}
-    
-    pinMode(BUTTON_5, INPUT);
-    pinMode(BUTTON_4, INPUT);
-    pinMode(BUTTON_3, INPUT);
-    pinMode(BUTTON_2, INPUT);
-    pinMode(BUTTON_1, INPUT);
-    pinMode(BUSZER,  OUTPUT);
-    
-    pinMode(CS, OUTPUT);
-    SD.begin(CS,MOSI,MISO,CLK);
-    
-    first_save();  
+    SD.begin(CS,MOSI,MISO,CLK);   
+    Serial.begin(19200);
+    lcd.home();
+    lcd.print("Initializing SD card");
     
     lcd.begin(20, 4);  
     // createChar for LCD
@@ -134,6 +123,30 @@
     lcd.createChar(3, push3);
     lcd.createChar(4, push4);
     lcd.createChar(5, push5);
+    
+    pinMode(BUTTON_5, INPUT);
+    pinMode(BUTTON_4, INPUT);
+    pinMode(BUTTON_3, INPUT);
+    pinMode(BUTTON_2, INPUT);
+    pinMode(BUTTON_1, INPUT);
+    pinMode(BUSZER,  OUTPUT);
+    pinMode(CS, OUTPUT);
+    
+    while(!card.init(SPI_HALF_SPEED, CS))
+    {
+      while(1)
+      {
+        lcd.home();
+        lcd.print("   SDcard failed    ");
+        lcd.setCursor(0, 1);
+        lcd.print("  Please try again! ");
+      }
+    } 
+    
+    first_save();
+    delay(2000);
+    lcd.clear();
+    
     
   }
   
@@ -150,7 +163,7 @@
     lcd.write(byte(5));
     
     lcd.setCursor(0, 1);
-    lcd.print("  Please Choice");
+    lcd.print("  Please Choice  ");
     lcd.setCursor(17, 1);
     lcd.write(byte(0));
     lcd.setCursor(18, 1);
@@ -168,6 +181,15 @@
     medium();
     poor();
     verypoor();
+    
+    while (!card.init(SPI_HALF_SPEED, CS))
+    {
+      lcd.clear();
+      lcd.home();
+      lcd.print("   SDcard failed    ");
+      lcd.setCursor(0, 1);
+      lcd.print("  Please Restart !  ");
+    } 
   }
   
   void showtime()
