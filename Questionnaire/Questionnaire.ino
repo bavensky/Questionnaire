@@ -163,7 +163,7 @@
     lcd.write(byte(5));
     
     lcd.setCursor(0, 1);
-    lcd.print("  Please Choice  ");
+    lcd.print("  Please Choose  ");
     lcd.setCursor(17, 1);
     lcd.write(byte(0));
     lcd.setCursor(18, 1);
